@@ -23,6 +23,7 @@ final class ChartView extends View {
     private int selected = -1;
     private int extent = 2;
     private boolean outside;
+    private float touchStartX, touchStartY;
     private String empty = "Loading paired candles…";
 
     ChartView(Context context, int accent, Listener listener) {
@@ -157,10 +158,13 @@ final class ChartView extends View {
         if (points.isEmpty()) return false;
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
-                getParent().requestDisallowInterceptTouchEvent(true);
+                touchStartX = event.getX();
+                touchStartY = event.getY();
                 requestFocus();
                 // Fall through to inspect the initial touch.
             case MotionEvent.ACTION_MOVE:
+                if (Math.abs(event.getX() - touchStartX) > Math.abs(event.getY() - touchStartY))
+                    getParent().requestDisallowInterceptTouchEvent(true);
                 float proportion = Math.max(0, Math.min(1, (event.getX() - plot.left) / plot.width()));
                 inspect(Math.round(proportion * (points.size() - 1)));
                 return true;

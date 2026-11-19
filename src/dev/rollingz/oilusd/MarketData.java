@@ -121,7 +121,7 @@ final class MarketData {
                     long timestamp = times.getLong(i);
                     if (!Double.isFinite(close) || close <= 0 || timestamp > now) continue;
                     long bucket = Series.bucket(timestamp, frame);
-                    if (frame.seconds > 0 && bucket + frame.seconds > now) continue;
+                    if (frame.seconds > 0 && (timestamp != bucket || bucket + frame.seconds > now)) continue;
                     bars.put(bucket, close);
                 }
                 if (bars.isEmpty()) throw new IOException("no valid candles");
